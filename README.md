@@ -1,2 +1,9 @@
 # aws-python-boto3
 Repository for python training for AWS Boto3 package
+
+# ReadEC2Resource Script
+This script is to read the ec2 resource from AWS for configured profile_name
+
+To run use below command:-
+
+pipenv run ReadEC2Resource
