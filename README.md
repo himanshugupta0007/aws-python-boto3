@@ -20,3 +20,10 @@ install click on your pipenv env:-
 pipenv install click
 
 # Read Boto3 documentation
+
+InstanceFilter->
+
+Filter Instace on the basis of tags
+- Restart instance
+- stop instance
+- start instance
