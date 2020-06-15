@@ -4,6 +4,7 @@ import boto3
 #read its documentation
 #click gives the help option by deafult
 import click
+import botocore
 #to create a session with AWS account with configured profile
 session = boto3.Session(profile_name='training-user')
 # Get resources for ec2 instance
@@ -55,9 +56,15 @@ def create_snapshot(project):
     """ Create snapshot for EC2 Instance """
     ec2resource = getInstance(project)
     for e in ec2resource:
+        print("Stopping the {0} to create a snapshot".format(e.id))
+        e.stop()
+        e.wait_until_stopped()
         for v in e.volumes.all():
             print("Creating Snapshot for Volume {0} ".format(v.id))
             v.create_snapshot(Description="Created by Python Script")
+        e.start()
+        e.wait_until_running()
+        print("Instance {0} started".format(e.id))
         return
 
 @volumne.command('list')
@@ -105,7 +112,11 @@ def stopInstance(project):
     instances = getInstance(project)
     for i in instances:
         print("Stopping instance {0}....".format(i))
-        i.stop();
+        try:
+            i.stop();
+        except botocore.exceptions.ClientError as e:
+            print("Could not stopped instance beacuse of {0}".format(i.id) + str(e))
+            continue
 
 @instance.command('start')
 @click.option('--project', default=None,
@@ -115,7 +126,11 @@ def stopInstance(project):
     instances = getInstance(project)
     for i in instances:
         print("Start instance {0}....".format(i))
-        i.start();
+        try:
+            i.start();
+        except botocore.exceptions.ClientError as e:
+            print("Could not Start instance beacuse of {0}".format(i.id) + str(e))
+            continue
 
 @instance.command('restart')
 @click.option('--project', default=None,
